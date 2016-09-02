@@ -15,12 +15,7 @@ if (!fs.existsSync(webpackDir)) {
 }
 
 if (!fs.existsSync(webpackConfigFile)) {
-  var webpackConfig = (
-    `module.exports = {
-       entry: './index.js',
-       output: './bundle.js',
-     };`
-  );
+  var webpackConfig = "module.exports = {\n  entry: './index.js',\n  output: './bundle.js',\n};"
 
   fs.appendFileSync(appRootDir + '/webpack/webpack.config.js', webpackConfig);
 }
