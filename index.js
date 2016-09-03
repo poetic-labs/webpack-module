@@ -1,41 +1,14 @@
+var webpackModule = require('./src/webpackModule.js');
+
 // node node_modules/webpack/bin/webpack.js;
 
-var fs = require("fs");
-var path = require("path");
-var webpack = require("webpack");
-var appRootDir = require('app-root-dir').get();
+// TODO create webpack module object that exposes webpack compile, webpack
+// plugin event hooks, and webpack itself.
+//
+// TODO find and register npm packages that start with webpack? Pass wp-module
+// into children
+//
+// TODO Build plugin that allows childrne to hook into events
 
-// TODO write webpack config in webpack folder
-
-var webpackDir = appRootDir + '/webpack/';
-var webpackConfigFile = appRootDir + '/webpack/webpack.config.js';
-
-if (!fs.existsSync(webpackDir)) {
-  fs.mkdirSync(appRootDir + '/webpack/');
-}
-
-if (!fs.existsSync(webpackConfigFile)) {
-  var webpackConfig = "module.exports = {\n  entry: './index.js',\n  output: './bundle.js',\n};"
-
-  fs.appendFileSync(appRootDir + '/webpack/webpack.config.js', webpackConfig);
-}
-
-// TODO read config when running webpack
-
-var config = require(webpackConfigFile);
-
-// TODO expose webpack and a webpack compile function
-
-function build() {
-  // returns a Compiler instance
-  var compiler = webpack(config);
-
-  compiler.run(function(err, stats) {
-    if (err) {
-       console.log(err);
-    }
-    console.log(stats);
-  });
-};
-
-build();
+// console.log(webpackModule);
+// webpackModule.bundle();
