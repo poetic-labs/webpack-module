@@ -1,5 +1,5 @@
-function dynamicPlugin(options) {
-  // Configure your plugin with options...
+function dynamicPlugin(callbacks) {
+  this.callbacks = callbacks;
 }
 
 dynamicPlugin.prototype.apply = function(compiler) {

@@ -11,4 +11,4 @@ var webpackModule = require('./src/webpackModule.js');
 // TODO Build plugin that allows childrne to hook into events
 
 // console.log(webpackModule);
-// webpackModule.bundle();
+webpackModule.bundle();
