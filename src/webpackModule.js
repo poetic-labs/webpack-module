@@ -1,7 +1,6 @@
 var appRootDir = require('app-root-dir').get();
 var fs = require("fs");
 var webpackConfigFile = appRootDir + '/webpack/webpack.config.js';
-var pkgConf = require('pkg-conf');
 var webpack = require("webpack");
 var dynamicPlugin = require("./dynamicPlugin.js");
 
@@ -9,37 +8,15 @@ var dynamicPlugin = require("./dynamicPlugin.js");
 //
 // find from node modules then require and pass webpackModule
 
-pkgConf(/stanza-webpack*/).then(function(config) {
-    console.log(config);
-    //=> true
-});
-
 var webpackModule = {
   bundle: function() {
-    this.plugins.push({ plugin: dynamicPlugin })
-
-    var plugins =  this.plugins.map(function(pluginObject) {
-                     return new pluginObject.plugin();
-                   });
-
-    console.log(plugins);
-
-    var loaders = this.loaders;
-
-    var config = {
-      entry: './index.js',
-      output: './bundle.js',
-      plugins: plugins,
-      module: {
-        loaders: loaders,
-      }
-    };
+    this.register({ plugin: dynamicPlugin });
 
     if (fs.existsSync(webpackConfigFile)) {
       config = require(webpackConfigFile);
     }
 
-    var compiler = webpack(config);
+    var compiler = webpack(this.config);
 
     compiler.run(function(err, stats) {
       if (err) {
@@ -49,24 +26,29 @@ var webpackModule = {
     });
   },
 
-  loaders: [],
-
-  plugins: [],
+  config: {
+    entry: './index.js',
+    output: './bundle.js',
+    plugins: [],
+    module: {
+      loaders: [],
+    }
+  },
 
   register: function(child) {
     // child should be an object
 
-    if (typeof child !== object) {
+    if (typeof child !== 'object') {
       throw new Error('A registering child must be an object.');
     }
 
     if (child.loader || child.loaders) {
       // example loader child = { loader: 'babel', test: /\.js?$/ }
-      this.loaders.push(child);
+      this.config.module.loaders.push(child);
 
     } else if (child.plugin) {
-      // example plugin child = { plugin: dynamicPlugin, args: ['hello'] }
-      this.plugins.push(child);
+      // example plugin child = { plugin: dynamicPlugin }
+      this.config.plugins.push( new child.plugin() );
 
     } else {
       throw new Error('A registering child must declare a plugin, loader, or loaders property.');
