@@ -1,6 +1,6 @@
 {
   "name": "webpack-module",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Internal package",
   "main": "index.js",
   "scripts": {
@@ -13,5 +13,6 @@
     "app-root-dir": "^1.0.2",
     "pkg-conf": "^1.1.3",
     "webpack": "^2.1.0-beta.21"
-  }
+  },
+  "devDependencies": {}
 }

@@ -1,22 +1,29 @@
-function dynamicPlugin(callbacks) {
-  this.callbacks = callbacks;
+function dynamicPlugin(eventEmitter) {
+  this.compileEventEmitter = eventEmitter;
 }
 
 dynamicPlugin.prototype.apply = function(compiler) {
+  var compileEventEmitter = this.compileEventEmitter;
+
   compiler.plugin("compile", function(params) {
-    console.log("The compiler is starting to compile...");
+    compileEventEmitter.emit('compile');
   });
 
   compiler.plugin("compilation", function(compilation) {
-    console.log("The compiler is starting a new compilation...");
+    compileEventEmitter.emit('compilation');
 
     compilation.plugin("optimize", function() {
-      console.log("The compilation is starting to optimize files...");
+      compileEventEmitter.emit('optimize');
     });
   });
 
   compiler.plugin("emit", function(compilation, callback) {
-    console.log("The compilation is going to emit files...");
+    compileEventEmitter.emit('emit');
+    callback();
+  });
+
+  compiler.plugin("after-compile", function(compilation, callback) {
+    compileEventEmitter.emit('after-compile');
     callback();
   });
 };
