@@ -1,12 +1,18 @@
 var appRootDir = require('app-root-dir').get();
 var fs = require("fs");
 var webpackConfigFile = appRootDir + '/webpack/webpack.config.js';
+var pkgConf = require('pkg-conf');
 var webpack = require("webpack");
 var dynamicPlugin = require("./dynamicPlugin.js");
 
 // TODO require plugins/loaders
 //
 // find from node modules then require and pass webpackModule
+
+pkgConf(/stanza-webpack*/).then(function(config) {
+    console.log(config);
+    //=> true
+});
 
 var webpackModule = {
   bundle: function() {
@@ -23,9 +29,9 @@ var webpackModule = {
     var config = {
       entry: './index.js',
       output: './bundle.js',
-      plugins,
+      plugins: plugins,
       module: {
-        loaders,
+        loaders: loaders,
       }
     };
 
