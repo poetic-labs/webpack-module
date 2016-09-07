@@ -12,9 +12,10 @@ const webpack = require('webpack');
 const EventEmitter = require('events');
 const compileEventEmitter = new EventEmitter();
 
-compileEventEmitter.on('after-compile', function() {
-  console.log('done');
-});
+// how to hook into the event emitter
+// compileEventEmitter.on('after-compile', function() {
+  // console.log('done');
+// });
 
 class StanzaWebpack {
   constructor() {
