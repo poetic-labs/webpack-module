@@ -47493,7 +47493,6 @@ class StanzaWebpack {
 
         const keywords = dependencyPackageJson.keywords || [];
 
-  console.log(keywords);
         if (keywords.includes('stanza-webpack')) {
           const extensionPath = path.dirname(dependencyPackageJsonPath);
           const extension = !(function webpackMissingModule() { var e = new Error("Cannot find module \".\""); e.code = 'MODULE_NOT_FOUND'; throw e; }());
@@ -47503,7 +47502,9 @@ class StanzaWebpack {
           }
         }
       } catch (error) {
-        // TODO: Add logging
+        // TODO: Add better error handling
+        console.log(error);
+
         return false;
       }
     });
@@ -47516,14 +47517,20 @@ class StanzaWebpack {
       // ownerConfig.register(this.config, compileEventEmitter);
     // }
 
-    this.bundle();
+    // add compile event loop plugin
+    this.config.plugins.push(new compileEventPlugin(compileEventEmitter));
+
+    // create compiler
+    this.compiler = webpack(this.config);
   }
 
   //TODO: Create a config constructor that builds webpack client/server configs
   setDefaultConfig() {
     this.config = {
       entry: './index.js',
-      output: './bundle.js',
+      output: {
+        filename: 'bundle.js'
+      },
       plugins: [],
       module: {
         loaders: [],
@@ -47532,16 +47539,17 @@ class StanzaWebpack {
   }
 
   bundle() {
-    // event loop plugin
-    this.config.plugins.push(new compileEventPlugin(compileEventEmitter));
+    this.compiler.run((err, stats) => {
+      if (err) console.log(err);
 
-    // construct compiler
-    this.compiler = webpack(this.config);
+      console.log('compiling');
+    });
+  }
 
-    this.compiler.run(function(err, stats) {
-      if (err) {
-         console.log(err);
-      }
+  bundleAndWatch() {
+    this.watcher = this.compiler.watch({}, (err, stats) => {
+      if (err) console.log(err);
+
       console.log('compiling');
     });
   }
@@ -117834,6 +117842,8 @@ function compileEventPlugin(eventEmitter) {
   this.compileEventEmitter = eventEmitter;
 }
 
+// TODO: emit all events;
+
 compileEventPlugin.prototype.apply = function(compiler) {
   compiler.plugin("compile", (params) => {
     this.compileEventEmitter.emit('compile');
@@ -117889,12 +117899,11 @@ module.exports = compileEventPlugin;
 /* 784 */
 /***/ function(module, exports, __webpack_require__) {
 
-__webpack_require__(341);
+const StanzaWebpack = __webpack_require__(341);
 
 // node node_modules/webpack/bin/webpack.js;
 
-
-// StanzaWebpack.bundle();
+StanzaWebpack.bundleAndWatch();
 
 
 /***/ }

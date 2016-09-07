@@ -2,6 +2,8 @@ function compileEventPlugin(eventEmitter) {
   this.compileEventEmitter = eventEmitter;
 }
 
+// TODO: emit all events;
+
 compileEventPlugin.prototype.apply = function(compiler) {
   compiler.plugin("compile", (params) => {
     this.compileEventEmitter.emit('compile');

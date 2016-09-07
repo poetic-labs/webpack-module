@@ -56,14 +56,20 @@ class StanzaWebpack {
       // ownerConfig.register(this.config, compileEventEmitter);
     // }
 
-    // this.bundle();
+    // add compile event loop plugin
+    this.config.plugins.push(new compileEventPlugin(compileEventEmitter));
+
+    // create compiler
+    this.compiler = webpack(this.config);
   }
 
   //TODO: Create a config constructor that builds webpack client/server configs
   setDefaultConfig() {
     this.config = {
       entry: './index.js',
-      output: './bundle.js',
+      output: {
+        filename: 'bundle.js'
+      },
       plugins: [],
       module: {
         loaders: [],
@@ -72,17 +78,17 @@ class StanzaWebpack {
   }
 
   bundle() {
-    // compile event loop plugin
-    this.config.plugins.push(new compileEventPlugin(compileEventEmitter));
+    this.compiler.run((err, stats) => {
+      if (err) console.log(err);
 
-    // construct the compiler
-    this.compiler = webpack(this.config);
+      console.log('compiling');
+    });
+  }
 
-    // bundle
-    this.compiler.run(function(err, stats) {
-      if (err) {
-         console.log(err);
-      }
+  bundleAndWatch() {
+    this.watcher = this.compiler.watch({}, (err, stats) => {
+      if (err) console.log(err);
+
       console.log('compiling');
     });
   }
