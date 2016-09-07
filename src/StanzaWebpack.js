@@ -58,8 +58,6 @@ class StanzaWebpack {
 
     // add compile event loop plugin
     this.config.plugins.push(new compileEventPlugin(compileEventEmitter));
-
-    // create compiler
     this.compiler = webpack(this.config);
   }
 
