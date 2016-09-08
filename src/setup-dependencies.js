@@ -19,7 +19,7 @@ const getCoreDependencies = () => {
   const devDependencies = pkgConf.sync('devDependencies', { cwd: coreDirectory });
   const dependencies = pkgConf.sync('dependencies', { cwd: coreDirectory });
 
-  const coreDependencies = devDependencies.concat(dependencies);
+  const coreDependencies = Object.assign(devDependencies, dependencies);
 
   return structureDependencies(coreDependencies, coreDirectory);
 };
@@ -34,8 +34,9 @@ const filterAndSetupDependencies = (dependencyPath, object, keyword, setupFuncti
     const extension = require(extensionPath);
 
     // why the dependencyPath?
-
-    extension[setupFunction](keyword, object, dependencyPath);
+    if (typeof extension[setupFunction] === 'function') {
+      extension[setupFunction](keyword, object, dependencyPath);
+    }
   }
 };
 
