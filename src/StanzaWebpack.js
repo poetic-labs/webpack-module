@@ -1,5 +1,4 @@
 const appRootPath = require('app-root-dir').get();
-const compileEventPlugin = require('./compileEventPlugin.js');
 const findUp = require('find-up');
 const fs = require('fs');
 const path = require('path');
@@ -8,14 +7,6 @@ const resolve = require('resolve');
 
 const webpackConfigFile = appRootPath + '/webpack/webpack.config.js';
 const webpack = require('webpack');
-
-const EventEmitter = require('events');
-const compileEventEmitter = new EventEmitter();
-
-// how to hook into the event emitter
-// compileEventEmitter.on('after-compile', function() {
-  // console.log('done');
-// });
 
 class StanzaWebpack {
   constructor() {
@@ -38,7 +29,7 @@ class StanzaWebpack {
           const extension = require(extensionPath);
 
           if (typeof extension.register === 'function') {
-            extension.register(this.config, compileEventEmitter);
+            extension.register('stanza-webpack', this);
           }
         }
       } catch (error) {
@@ -54,11 +45,9 @@ class StanzaWebpack {
 
     // if (fs.existsSync(webpackConfigFile)) {
       // const ownerConfig = require(webpackConfigFile);
-      // ownerConfig.register(this.config, compileEventEmitter);
+      // ownerConfig.register('stanza-webpack', this);
     // }
 
-    // add compile event loop plugin
-    this.config.plugins.push(new compileEventPlugin(compileEventEmitter));
     this.compiler = webpack(this.config);
   }
 
