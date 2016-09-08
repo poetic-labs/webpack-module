@@ -1,3 +1,4 @@
+const pkgConf = require('pkg-conf');
 const findUp = require('find-up');
 const path = require('path');
 const resolve = require('resolve');
