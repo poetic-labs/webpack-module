@@ -7,32 +7,52 @@ const webpack = require('webpack');
 
 class StanzaWebpack {
   constructor() {
-    this.setDefaultConfig();
+    // assume stanza will declare the environment
+    const environment = process.env.NODE_ENV;
 
-    setupDependencies('stanza-webpack', this.config);
+    this.setupConfigs(environment);
 
-    // Pass this.config to the extensible owner webpack config for final say
+    setupDependencies('stanza-webpack', this);
+
     // TODO: rename and think more about semantics of custom webpack file
-
+    // Pass webpack to the extensible owner webpack config file for final say
     if (fs.existsSync(webpackConfigFile)) {
       const ownerConfig = require(webpackConfigFile);
 
       if (typeof ownerConfig.register === 'function') {
-        ownerConfig.register(this.config);
+        ownerConfig.register(this);
       }
     }
 
-    this.compiler = webpack(this.config);
+    this.setupCompilers();
 
-    setupDependencies('stanza-webpack', this.compiler, 'requestCompiler');
+    // TODO: sync with JR about this request
+    setupDependencies('stanza-webpack', this, 'requestCompiler');
   }
 
-  //TODO: Create a config constructor that builds webpack client/server configs
-  setDefaultConfig() {
-    this.config = {
-      entry: './index.js',
+  setupCompilers() {
+    this.clientCompiler = webpack(this.clientConfig);
+    this.serverCompiler = webpack(this.serverConfig);
+  }
+
+  setupConfigs(environment) {
+    const isProd = environment === 'production';
+
+    this.serverConfig = {
+      entry: './server/index.js',
       output: {
-        filename: 'bundle.js'
+        filename: 'build/serverBundle.js'
+      },
+      plugins: [],
+      module: {
+        loaders: [],
+      }
+    }
+
+    this.clientConfig = {
+      entry: './client/index.js',
+      output: {
+        filename: 'build/clientBundle.js'
       },
       plugins: [],
       module: {
@@ -41,20 +61,50 @@ class StanzaWebpack {
     }
   }
 
-  bundle() {
-    this.compiler.run((err, stats) => {
-      if (err) console.log(err);
+  bundle(target) {
+    // defaults to bundling both compilers
+    let targetCompilers = ['client', 'server'];
 
-      console.log('compiling');
-    });
+    if (target) targetCompilers = [target];
+
+    if (targetCompilers.includes('client')) {
+      this.clientCompiler.run((err, stats) => {
+        if (err) console.log(err);
+
+        console.log('bundling server');
+      });
+    }
+
+    if (targetCompilers.includes('server')) {
+      this.serverCompiler.run((err, stats) => {
+        if (err) console.log(err);
+
+        console.log('bundling server');
+      });
+    }
   }
 
-  bundleAndWatch() {
-    this.watcher = this.compiler.watch({}, (err, stats) => {
-      if (err) console.log(err);
+  bundleAndWatch(target) {
+    // defaults to watching and bundling both compilers
+    let targetCompilers = ['client', 'server'];
 
-      console.log('compiling');
-    });
+    if (target) targetCompilers = [target];
+
+    if (targetCompilers.includes('client')) {
+      this.clientWatcher = this.clientCompiler.watch({}, (err, stats) => {
+        if (err) console.log(err);
+
+        console.log('bundling client');
+      });
+    }
+
+    if (targetCompilers.includes('server')) {
+      this.serverWatcher = this.serverCompiler.watch({}, (err, stats) => {
+        if (err) console.log(err);
+
+        console.log('bundling server');
+      });
+    }
   }
 };
 
