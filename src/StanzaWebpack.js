@@ -2,7 +2,7 @@ const appRootPath = require('app-root-dir').get();
 const fs = require('fs');
 const setupDependencies = require('./setup-dependencies.js');
 
-const webpackConfigFile = appRootPath + '/webpack/webpack.config.js';
+const webpackConfigFile = appRootPath + '/webpack/webpack-config-overwrite.js';
 const webpack = require('webpack');
 
 class StanzaWebpack {
@@ -11,13 +11,16 @@ class StanzaWebpack {
 
     setupDependencies('stanza-webpack', this.config);
 
-    //TODO: Pass this.config to the extensible owner webpack config for final
-    //say
+    // Pass this.config to the extensible owner webpack config for final say
+    // TODO: rename and think more about semantics of custom webpack file
 
-    // if (fs.existsSync(webpackConfigFile)) {
-      // const ownerConfig = require(webpackConfigFile);
-      // ownerConfig.register('stanza-webpack', this);
-    // }
+    if (fs.existsSync(webpackConfigFile)) {
+      const ownerConfig = require(webpackConfigFile);
+
+      if (typeof ownerConfig.register === 'function') {
+        ownerConfig.register(this.config);
+      }
+    }
 
     this.compiler = webpack(this.config);
 

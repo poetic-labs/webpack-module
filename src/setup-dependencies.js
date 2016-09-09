@@ -4,16 +4,18 @@ const path = require('path');
 const resolve = require('resolve');
 
 const structureDependencies = (dependencies, dependencyPath) => (
-  Object.keys(dependencies).map(dependency => (
-    {
-      basedir: dependencyPath,
-      name: dependency,
-    }
-  ))
+  Object.keys(dependencies)
+    .map(dependency => (
+      {
+        basedir: dependencyPath,
+        name: dependency,
+      }
+    ))
 );
 
 const getCoreDependencies = () => {
   const packageJsonPath = findUp.sync('package.json', { cwd: __dirname });
+
   const coreDirectory = !packageJsonPath ? false : path.dirname(packageJsonPath);
 
   const devDependencies = pkgConf.sync('devDependencies', { cwd: coreDirectory });
@@ -27,9 +29,9 @@ const getCoreDependencies = () => {
 const filterAndSetupDependencies = (dependencyPath, object, keyword, setupFunction) => {
   const dependencyPackageJsonPath = findUp.sync('package.json', { cwd: dependencyPath });
   const dependencyPackageJson = require(dependencyPackageJsonPath);
-  const keywords = dependencyPackageJson.keywords || [];
+  const dependencyKeywords = dependencyPackageJson.keywords || [];
 
-  if (keywords.includes(keyword)) {
+  if (dependencyKeywords.includes(keyword)) {
     const extensionPath = path.dirname(dependencyPackageJsonPath);
     const extension = require(extensionPath);
 
