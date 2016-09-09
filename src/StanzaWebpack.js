@@ -39,6 +39,7 @@ class StanzaWebpack {
     const isProd = environment === 'production';
 
     this.serverConfig = {
+      target: 'node',
       entry: './server/index.js',
       output: {
         filename: 'build/serverBundle.js'
@@ -50,6 +51,7 @@ class StanzaWebpack {
     }
 
     this.clientConfig = {
+      target: 'web',
       entry: './client/index.js',
       output: {
         filename: 'build/clientBundle.js'
