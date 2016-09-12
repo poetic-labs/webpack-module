@@ -14,7 +14,7 @@ const structureDependencies = (dependencies, dependencyPath) => (
 );
 
 const getCoreDependencies = () => {
-  const packageJsonPath = findUp.sync('package.json', { cwd: __dirname });
+  const packageJsonPath = findUp.sync('package.json');
 
   const coreDirectory = !packageJsonPath ? false : path.dirname(packageJsonPath);
 

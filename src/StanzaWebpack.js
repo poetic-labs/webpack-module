@@ -42,7 +42,7 @@ class StanzaWebpack {
       target: 'node',
       entry: './server/index.js',
       output: {
-        filename: 'build/serverBundle.js'
+        filename: 'build/server/entry.js'
       },
       plugins: [],
       module: {
@@ -54,7 +54,7 @@ class StanzaWebpack {
       target: 'web',
       entry: './client/index.js',
       output: {
-        filename: 'build/clientBundle.js'
+        filename: 'build/client/entry.js'
       },
       plugins: [],
       module: {
