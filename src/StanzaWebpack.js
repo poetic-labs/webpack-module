@@ -80,6 +80,18 @@ class StanzaWebpack {
         }]
       }
     }
+
+    this.devServerConfig = {
+      contentBase: '/build/',
+      hot: true,
+      inline: true,
+      progress: true,
+      proxy: {
+        "*": "http://localhost:3000"
+      },
+      historyApiFallback: true,
+      stats: 'errors',
+    }
   }
 
   bundle(target) {
@@ -126,6 +138,17 @@ class StanzaWebpack {
         console.log('bundling server');
       });
     }
+  }
+
+  runDevServer(port = 3001) {
+    new WebpackDevServer(webpack(this.clientConfig), this.devServerConfig)
+      .listen(port, 'localhost', function (err, result) {
+        if (err) {
+          console.log(err);
+        }
+
+        console.log('Listening at localhost:' + port);
+      });
   }
 };
 

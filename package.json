@@ -10,6 +10,10 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "bin": {
+    "stanza-webpack": "./bin/webpack-bundle.js",
+    "stanza-webpack-dev-server": "./bin/webpack-dev-server.js"
+  },
   "dependencies": {
     "app-root-dir": "^1.0.2",
     "babel-core": "^6.14.0",
