@@ -4,18 +4,20 @@ const setupDependencies = require('./setup-dependencies.js');
 
 const webpackConfigFile = appRootPath + '/webpack/webpack-config-overwrite.js';
 const webpack = require('webpack');
+const WebpackDevServer = require('webpack-dev-server');
 
 class StanzaWebpack {
   constructor() {
     // assume stanza will declare the environment
     const environment = process.env.NODE_ENV;
 
+    this.webpack = webpack;
+    this.WebpackDevServer = WebpackDevServer;
+
     this.setupConfigs(environment);
 
     setupDependencies('stanza-webpack', this);
 
-    // TODO: rename and think more about semantics of custom webpack file
-    // Pass webpack to the extensible owner webpack config file for final say
     if (fs.existsSync(webpackConfigFile)) {
       const ownerConfig = require(webpackConfigFile);
 
@@ -26,7 +28,6 @@ class StanzaWebpack {
 
     this.setupCompilers();
 
-    // TODO: sync with JR about this request
     setupDependencies('stanza-webpack', this, 'requestCompiler');
   }
 
@@ -52,13 +53,31 @@ class StanzaWebpack {
 
     this.clientConfig = {
       target: 'web',
-      entry: './client/index.js',
+      entry: [
+        'webpack-dev-server/client?http://localhost:3001/',
+        'webpack/hot/only-dev-server',
+        './client/index.jsx',
+      ],
       output: {
-        filename: 'build/client/entry.js'
+        path: require("path").resolve("./build/"),
+        filename: 'client.entry.js'
       },
-      plugins: [],
+      resolve: {
+        extensions: ['', '.js', '.jsx']
+      },
+      plugins: [
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NoErrorsPlugin()
+      ],
       module: {
-        loaders: [],
+        loaders: [{
+          test: /\.jsx$/,
+          exclude: /node_modules/,
+          loader: "babel",
+          query: {
+            presets: [ 'es2015', 'react', 'react-hmre' ]
+          }
+        }]
       }
     }
   }
